@@ -6,8 +6,7 @@
 
     @Repository
     public interface MyFileRepository extends JpaRepository<FileEntity, Long> {
-        // Наследует базовые методы CRUD (save, findById, delete и т.д.) для FileEntity с ключом Long
 
         FileEntity findByFileName(String fileName);
-        // Метод для поиска сущности FileEntity по имени файла, автоматически реализован Spring Data JPA
+        // Метод для поиска сущности FileEntity по имени файла
     }

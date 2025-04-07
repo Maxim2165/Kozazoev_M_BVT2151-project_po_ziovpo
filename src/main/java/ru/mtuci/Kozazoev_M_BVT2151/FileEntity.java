@@ -15,12 +15,11 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "test_file_table")
-// Отмечает класс как сущность JPA и задаёт имя таблицы в базе данных
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-// Lombok-аннотации для автоматической генерации геттеров, сеттеров и конструкторов
 public class FileEntity {
 
     @Id
@@ -29,14 +28,14 @@ public class FileEntity {
     private Long id;
 
     @Column(name = "file_name", nullable = false)
-    // Поле fileName в таблице, не может быть null
+
     private String fileName;
 
     private String contentType;
-    // Поле для типа содержимого файла (необязательное, пока не используется)
+
 
     @Lob
-    // Отмечает поле data как Large Object для хранения больших данных (например, файлов)
+
     private byte[] data;
 
 }

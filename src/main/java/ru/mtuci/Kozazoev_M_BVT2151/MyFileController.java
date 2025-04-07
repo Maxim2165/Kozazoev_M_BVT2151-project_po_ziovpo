@@ -18,7 +18,7 @@ import java.util.Optional;
 // Отмечает класс как REST-контроллер с базовым путём /files
 public class MyFileController {
     private final MyFileRepository fileRepository;
-    // Конструктор с внедрением зависимости MyFileRepository
+
     public MyFileController(MyFileRepository fileRepository) {
         this.fileRepository = fileRepository;
     }
