@@ -3,17 +3,16 @@ package ru.mtuci.Kozazoev_M_BVT2151;
 import java.util.List;
 import java.util.UUID;
 
-// DTO для приема списка UUID от клиента
+// DTO для получения списка ID сигнатур от клиента
 public class SignatureIdsRequest {
     private List<UUID> ids;
 
-    // Геттер
+    //Геттер
     public List<UUID> getIds() {
-        return ids;
+        return ids; // Возвращаю список ID
     }
-
-    // Сеттер
+    //Сеттер
     public void setIds(List<UUID> ids) {
-        this.ids = ids;
+        this.ids = ids; // Устанавливаю список ID
     }
 }

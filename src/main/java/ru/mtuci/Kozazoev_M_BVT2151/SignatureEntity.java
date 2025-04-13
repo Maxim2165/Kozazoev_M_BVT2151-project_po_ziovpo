@@ -5,10 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+// Сущность для хранения сигнатур в базе данных
 @Entity
 @Table(name = "signatures")
 @Getter
@@ -16,11 +16,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignatureEntity {
-
     @Id
     @GeneratedValue
     @Column(columnDefinition = "UUID", updatable = false, nullable = false)
-    private UUID id; // GUID уникальный идентификатор
+    private UUID id; // Уникальный ID сигнатуры
 
     @Column(name = "threat_name", nullable = false)
     private String threatName; // Название угрозы
@@ -29,10 +28,10 @@ public class SignatureEntity {
     private String firstBytes; // Первые 8 байт сигнатуры
 
     @Column(name = "remainder_hash", nullable = false)
-    private String remainderHash; // Хэш "хвоста"
+    private String remainderHash; // Хэш остатка сигнатуры
 
     @Column(name = "remainder_length", nullable = false)
-    private int remainderLength; // Количество байт в "хвосте"
+    private int remainderLength; // Длина остатка сигнатуры
 
     @Column(name = "file_type")
     private String fileType; // Тип файла
@@ -43,25 +42,22 @@ public class SignatureEntity {
     @Column(name = "offset_end")
     private int offsetEnd; // Смещение конца сигнатуры
 
-
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt; // Дата и время последнего обновления
+    private LocalDateTime updatedAt; // Дата последнего обновления
 
     @Column(name = "status", nullable = false)
-    private String status; // Статус записи (ACTUAL, DELETED, CORRUPTED)
+    private String status; // Статус сигнатуры (ACTUAL, DELETED, CORRUPTED)
 
     @PrePersist
     protected void onCreate() {
-        // Автоматически устанавливает дату создания и статус ACTUAL при добавлении записи
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now(); // Устанавливаю дату создания
         if (this.status == null) {
-            this.status = "ACTUAL";
+            this.status = "ACTUAL"; // Устанавливаю статус ACTUAL при создании
         }
     }
 
     @PreUpdate
     protected void onUpdate() {
-        // Обновляет дату при изменении записи
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now(); // Обновляю дату при изменении
     }
 }

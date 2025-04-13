@@ -2,31 +2,29 @@ package ru.mtuci.Kozazoev_M_BVT2151;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+// Контроллер для управления сигнатурами
 @RestController
 @RequestMapping("/signatures")
 public class SignatureController {
-
     private final SignatureRepository signatureRepository;
     private final SignatureHistoryRepository historyRepository;
     private final AuditRepository auditRepository;
 
-    // Конструктор с внедрением всех репозиториев
     public SignatureController(SignatureRepository signatureRepository,
                                SignatureHistoryRepository historyRepository,
                                AuditRepository auditRepository) {
-        this.signatureRepository = signatureRepository;
-        this.historyRepository = historyRepository;
-        this.auditRepository = auditRepository;
+        this.signatureRepository = signatureRepository; // Внедряю репозиторий сигнатур
+        this.historyRepository = historyRepository; // Внедряю репозиторий истории
+        this.auditRepository = auditRepository; // Внедряю репозиторий аудита
     }
 
-    // Добавление новой сигнатуры (пункт 4.4)
+    // Эндпоинт для добавления новой сигнатуры
     @PostMapping("/add")
     public ResponseEntity<SignatureEntity> addSignature(@RequestBody SignatureRequest signatureRequest) {
         SignatureEntity signature = new SignatureEntity();
@@ -37,6 +35,7 @@ public class SignatureController {
         signature.setOffsetStart(signatureRequest.getOffsetStart());
         signature.setOffsetEnd(signatureRequest.getOffsetEnd());
 
+        // Вычисляю хэш для remainder, если он есть
         String remainder = signatureRequest.getRemainder();
         if (remainder != null && !remainder.isEmpty()) {
             String remainderHash = SignatureUtils.calculateSHA256(remainder);
@@ -45,9 +44,9 @@ public class SignatureController {
             signature.setRemainderHash(null);
         }
 
-        SignatureEntity savedSignature = signatureRepository.save(signature);
+        SignatureEntity savedSignature = signatureRepository.save(signature); // Сохраняю сигнатуру
 
-        // Логирут добавление в Audit
+        // Логирую добавление в аудит
         AuditEntity audit = new AuditEntity();
         audit.setSignatureId(savedSignature.getId());
         audit.setChangedBy(null);
@@ -58,14 +57,14 @@ public class SignatureController {
         return ResponseEntity.ok(savedSignature);
     }
 
-    // Получение всех актуальных сигнатур (пункт 4.1)
+    // Эндпоинт для получения всех актуальных сигнатур
     @GetMapping("/all")
     public ResponseEntity<List<SignatureEntity>> getAllSignatures() {
         List<SignatureEntity> signatures = signatureRepository.findByStatus("ACTUAL");
         return ResponseEntity.ok(signatures);
     }
 
-    // Получение "диффа" — сигнатур после даты (пункт 4.2)
+    // Эндпоинт для получения сигнатур, обновленных после указанной даты
     @GetMapping("/diff")
     public ResponseEntity<?> getDiff(@RequestParam("since") String since) {
         try {
@@ -77,7 +76,7 @@ public class SignatureController {
         }
     }
 
-    // Получение сигнатур по списку UUID (пункт 4.3)
+    // Эндпоинт для получения сигнатур по списку ID
     @PostMapping("/by-ids")
     public ResponseEntity<List<SignatureEntity>> getSignaturesByIds(@RequestBody SignatureIdsRequest request) {
         if (request.getIds() == null || request.getIds().isEmpty()) {
@@ -87,7 +86,7 @@ public class SignatureController {
         return ResponseEntity.ok(signatures);
     }
 
-    // Удаление сигнатуры — установка статуса DELETED (пункт 4.5)
+    // Эндпоинт для удаления сигнатуры (меняю статус на DELETED)
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSignature(@PathVariable("id") UUID id) {
         SignatureEntity signature = signatureRepository.findById(id).orElse(null);
@@ -95,7 +94,7 @@ public class SignatureController {
             return ResponseEntity.notFound().build();
         }
 
-        // Сохраняет старую версию в History
+        // Сохраняю старую версию в историю
         SignatureHistoryEntity history = new SignatureHistoryEntity();
         history.setSignatureId(signature.getId());
         history.setThreatName(signature.getThreatName());
@@ -109,10 +108,11 @@ public class SignatureController {
         history.setUpdatedAt(signature.getUpdatedAt());
         historyRepository.save(history);
 
-        // Меняет статус и сохраняем
+        // Меняю статус на DELETED и сохраняю
         signature.setStatus("DELETED");
         signatureRepository.save(signature);
 
+        // Логирую удаление в аудит
         AuditEntity audit = new AuditEntity();
         audit.setSignatureId(id);
         audit.setChangedBy(null);
@@ -123,7 +123,7 @@ public class SignatureController {
         return ResponseEntity.ok("Сигнатура с ID " + id + " отмечена как УДАЛЕНА");
     }
 
-    // Обновление сигнатуры (пункт 4.6)
+    // Эндпоинт для обновления сигнатуры
     @PutMapping("/{id}/update")
     public ResponseEntity<SignatureEntity> updateSignature(@PathVariable("id") UUID id, @RequestBody SignatureRequest signatureRequest) {
         SignatureEntity signature = signatureRepository.findById(id).orElse(null);
@@ -131,7 +131,7 @@ public class SignatureController {
             return ResponseEntity.notFound().build();
         }
 
-        // Сохраняет старую версию в History
+        // Сохраняю старую версию в историю
         SignatureHistoryEntity history = new SignatureHistoryEntity();
         history.setSignatureId(signature.getId());
         history.setThreatName(signature.getThreatName());
@@ -145,7 +145,7 @@ public class SignatureController {
         history.setUpdatedAt(signature.getUpdatedAt());
         historyRepository.save(history);
 
-        // Список измененных полей для Audit
+        // Определяю, какие поля изменились
         List<String> changedFields = new ArrayList<>();
         if (!signature.getThreatName().equals(signatureRequest.getThreatName())) changedFields.add("threatName");
         if (!signature.getFirstBytes().equals(signatureRequest.getFirstBytes())) changedFields.add("firstBytes");
@@ -154,6 +154,7 @@ public class SignatureController {
         if (signature.getOffsetStart() != signatureRequest.getOffsetStart()) changedFields.add("offsetStart");
         if (signature.getOffsetEnd() != signatureRequest.getOffsetEnd()) changedFields.add("offsetEnd");
 
+        // Обновляю поля
         signature.setThreatName(signatureRequest.getThreatName());
         signature.setFirstBytes(signatureRequest.getFirstBytes());
         signature.setRemainderLength(signatureRequest.getRemainderLength());
@@ -161,6 +162,7 @@ public class SignatureController {
         signature.setOffsetStart(signatureRequest.getOffsetStart());
         signature.setOffsetEnd(signatureRequest.getOffsetEnd());
 
+        // Обновляю remainderHash
         String remainder = signatureRequest.getRemainder();
         if (remainder != null && !remainder.isEmpty()) {
             String remainderHash = SignatureUtils.calculateSHA256(remainder);
@@ -171,8 +173,9 @@ public class SignatureController {
             signature.setRemainderHash(null);
         }
 
-        SignatureEntity updatedSignature = signatureRepository.save(signature);
+        SignatureEntity updatedSignature = signatureRepository.save(signature); // Сохраняю обновленную сигнатуру
 
+        // Логирую изменения в аудит, если они есть
         if (!changedFields.isEmpty()) {
             AuditEntity audit = new AuditEntity();
             audit.setSignatureId(id);
@@ -185,7 +188,7 @@ public class SignatureController {
         return ResponseEntity.ok(updatedSignature);
     }
 
-    // Получение сигнатур по статусу (пункт 4.7)
+    // Эндпоинт для получения сигнатур по статусу
     @GetMapping("/status/{status}")
     public ResponseEntity<?> getSignaturesByStatus(@PathVariable("status") String status) {
         String upperStatus = status.toUpperCase();

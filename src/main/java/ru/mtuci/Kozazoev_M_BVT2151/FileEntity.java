@@ -1,41 +1,28 @@
 package ru.mtuci.Kozazoev_M_BVT2151;
 
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// Сущность для хранения файлов в базе данных
 @Entity
 @Table(name = "test_file_table")
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // Устанавливает id как первичный ключ с автоинкрементом
-    private Long id;
+    private Long id; // Уникальный ID файла с автоинкрементом
 
     @Column(name = "file_name", nullable = false)
+    private String fileName; // Имя файла
 
-    private String fileName;
-
-    private String contentType;
-
+    private String contentType; // Тип содержимого файла (например, "text/plain")
 
     @Lob
-
-    private byte[] data;
-
+    private byte[] data; // Данные файла в виде массива байтов
 }

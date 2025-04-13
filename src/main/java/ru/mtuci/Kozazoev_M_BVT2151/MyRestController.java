@@ -5,28 +5,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+// Контроллер для тестовых эндпоинтов
 @RestController
 @RequestMapping("/api")
-// Отмечает класс как REST-контроллер и задаёт базовый путь /api для всех эндпоинтов
 public class MyRestController {
-
     private final MyService myService;
 
-    // Конструктор с внедрением зависимости MyService через Spring
     public MyRestController(MyService myService) {
-        this.myService = myService;
+        this.myService = myService; // Внедряю сервис
     }
 
+    // Эндпоинт для получения тестового сообщения
     @GetMapping("/hello")
     public String getMessage() {
-        // Обработчик GET-запроса /api/hello, возвращает сообщение из MyService
-        return myService.getMessage();
+        return myService.getMessage(); // Возвращаю сообщение из сервиса
     }
 
+    // Эндпоинт для эхо-ответа
     @GetMapping("/echo")
     public String echo(@RequestParam String str) {
-        // Обработчик GET-запроса /api/echo, возвращает переданный параметр str
-        return str;
+        return str; // Возвращаю переданную строку
     }
-
 }

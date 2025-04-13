@@ -1,69 +1,68 @@
 package ru.mtuci.Kozazoev_M_BVT2151;
 
-// DTO для приема данных от клиента
-class SignatureRequest {
+// DTO для получения данных сигнатуры от клиента
+public class SignatureRequest {
     private String threatName;
     private String firstBytes;
-    private String remainder; // "Хвост" сигнатуры
+    private String remainder; // Остаток сигнатуры
     private Integer remainderLength;
     private String fileType;
     private Integer offsetStart;
     private Integer offsetEnd;
 
-    // Геттеры и сеттеры
     public String getThreatName() {
-        return threatName;
+        return threatName; // Возвращаю название угрозы
     }
 
     public void setThreatName(String threatName) {
-        this.threatName = threatName;
+        this.threatName = threatName; // Устанавливаю название угрозы
     }
 
     public String getFirstBytes() {
-        return firstBytes;
+        return firstBytes; // Возвращаю первые байты
     }
 
     public void setFirstBytes(String firstBytes) {
-        this.firstBytes = firstBytes;
+        this.firstBytes = firstBytes; // Устанавливаю первые байты
     }
 
     public String getRemainder() {
-        return remainder;
+        return remainder; // Возвращаю остаток
     }
 
     public void setRemainder(String remainder) {
-        this.remainder = remainder;
+        this.remainder = remainder; // Устанавливаю остаток
     }
 
     public Integer getRemainderLength() {
-        return remainderLength;
+        return remainderLength; // Возвращаю длину остатка
     }
 
     public void setRemainderLength(Integer remainderLength) {
-        this.remainderLength = remainderLength;
+        this.remainderLength = remainderLength; // Устанавливаю длину остатка
     }
 
     public String getFileType() {
-        return fileType;
+        return fileType; // Возвращаю тип файла
     }
 
     public void setFileType(String fileType) {
-        this.fileType = fileType;
+        this.fileType = fileType; // Устанавливаю тип файла
     }
 
     public Integer getOffsetStart() {
-        return offsetStart;
+        return offsetStart; // Возвращаю смещение начала
     }
 
     public void setOffsetStart(Integer offsetStart) {
-        this.offsetStart = offsetStart;
+        this.offsetStart = offsetStart; // Устанавливаю смещение начала
     }
 
     public Integer getOffsetEnd() {
-        return offsetEnd;
+        return offsetEnd; // Возвращаю смещение конца
     }
 
     public void setOffsetEnd(Integer offsetEnd) {
-        this.offsetEnd = offsetEnd;
+        this.offsetEnd = offsetEnd; // Устанавливаю смещение конца
     }
 }
